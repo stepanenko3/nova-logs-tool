@@ -5,6 +5,7 @@ namespace Stepanenko3\LogsTool\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\File;
 use Stepanenko3\LogsTool\LogsService;
 use Stepanenko3\LogsTool\LogsTool;
 
@@ -12,9 +13,8 @@ class LogsController extends Controller
 {
     public function index()
     {
-        LogsService::setFile($file = request()->input('file', 'laravel.log'));
-
-        $logs = LogsService::all();
+        $file = request()->input('file', 'laravel.log');
+        $logs = LogsService::all($file);
 
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
 
@@ -69,7 +69,7 @@ class LogsController extends Controller
             abort(403);
         }
 
-        app('files')->delete(LogsService::pathToLogFile(request('file')));
+        File::delete(LogsService::pathToLogFile(request('file')));
         cache()->clear();
     }
 

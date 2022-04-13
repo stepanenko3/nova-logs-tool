@@ -2,17 +2,12 @@
 
 namespace Stepanenko3\LogsTool;
 
-use Closure;
+use Illuminate\Support\Facades\File;
 
 class LogsService
 {
     const MAX_FILE_SIZE = 52428800;
-    /**
-     * The callback that should be used to authenticate Horizon users.
-     *
-     * @var \Closure
-     */
-    public static $authUsing;
+
     /**
      * @var string file
      */
@@ -29,6 +24,7 @@ class LogsService
         'emergency' => 'text-red',
         'processed' => 'text-blue',
     ];
+
     private static $levels_imgs = [
         'debug'     => 'exclamation-circle',
         'info'      => 'exclamation-circle',
@@ -40,6 +36,7 @@ class LogsService
         'emergency' => 'exclamation-triangle',
         'processed' => 'exclamation-circle'
     ];
+
     /**
      * Log levels that are used.
      *
@@ -58,43 +55,6 @@ class LogsService
     ];
 
     /**
-     * Determine if the given request can access the Horizon dashboard.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return bool
-     */
-    public static function check($request)
-    {
-        return (static::$authUsing ?: function () {
-            return app()->environment('local');
-        })($request);
-    }
-
-    /**
-     * Set the callback that should be used to authenticate Horizon users.
-     *
-     * @param  \Closure  $callback
-     * @return static
-     */
-    public static function auth(Closure $callback)
-    {
-        static::$authUsing = $callback;
-
-        return new static;
-    }
-
-    /**
-     * @param  string  $file
-     */
-    public static function setFile($file)
-    {
-        $file = self::pathToLogFile($file);
-        if (app('files')->exists($file)) {
-            self::$file = $file;
-        }
-    }
-
-    /**
      * @param  string  $file
      * @return string
      *
@@ -102,13 +62,8 @@ class LogsService
      */
     public static function pathToLogFile($file)
     {
-        $logsPath = storage_path('logs');
-        if (app('files')->exists($file)) { // try the absolute path
-            return $file;
-        }
-        $file = $logsPath . '/' . $file;
-        // check if requested file is really in the logs directory
-        if (dirname($file) !== $logsPath) {
+        $file = storage_path('logs/' . $file);
+        if (!File::exists($file)) {
             throw new \Exception('No such log file');
         }
 
@@ -116,39 +71,39 @@ class LogsService
     }
 
     /**
-     * @return string
-     */
-    public static function getFileName()
-    {
-        return basename(self::$file);
-    }
-
-    /**
      * @return array
      */
-    public static function all()
+    public static function all($logFile)
     {
         $log = [];
         $pattern = '/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}([\+-]\d{4})?\].*/';
-        if (!self::$file) {
+
+        if (!$logFile) {
             $log_file = self::getFiles();
             if (!count($log_file)) {
                 return [];
             }
-            self::$file = $log_file[0];
+            $logFile = $log_file[0];
         }
-        if (app('files')->size(self::$file) > self::MAX_FILE_SIZE) {
+
+        $logFile = self::pathToLogFile($logFile);
+
+        if (File::size($logFile) > self::MAX_FILE_SIZE) {
             return;
         }
-        $file = app('files')->get(self::$file);
+
+        $file = File::get($logFile);
         preg_match_all($pattern, $file, $headings);
+
         if (!is_array($headings)) {
             return $log;
         }
+
         $log_data = preg_split($pattern, $file);
         if ($log_data[0] < 1) {
             array_shift($log_data);
         }
+
         foreach ($headings as $h) {
             for ($i = 0, $j = count($h); $i < $j; $i++) {
                 foreach (self::$log_levels as $level) {
@@ -176,20 +131,14 @@ class LogsService
     }
 
     /**
-     * @param  bool  $basename
      * @return array
      */
-    public static function getFiles($basename = false)
+    public static function getFiles()
     {
-        $files = glob(storage_path() . '/logs/*.log');
-        $files = array_reverse($files);
-        $files = array_filter($files, 'is_file');
-        if ($basename && is_array($files)) {
-            foreach ($files as $k => $file) {
-                $files[$k] = basename($file);
-            }
-        }
-
-        return array_values($files);
+        $logsPath = storage_path('logs');
+        $files = File::allFiles($logsPath);
+        return collect($files)
+            ->map(fn ($file) => $file->getRelativePathname())
+            ->toArray();
     }
 }
