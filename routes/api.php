@@ -15,6 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('logs', \Stepanenko3\LogsTool\Http\Controllers\LogsController::class.'@index');
 Route::get('logs/permissions', \Stepanenko3\LogsTool\Http\Controllers\LogsController::class.'@permissions');
-Route::get('logs/{log}', \Stepanenko3\LogsTool\Http\Controllers\LogsController::class.'@show');
+Route::get('logs/{log}', \Stepanenko3\LogsTool\Http\Controllers\LogsController::class.'@show')->where(['log' => '.*']);
 Route::get('daily-log-files', \Stepanenko3\LogsTool\Http\Controllers\LogsController::class.'@dailyLogFiles');
 Route::delete('logs', \Stepanenko3\LogsTool\Http\Controllers\LogsController::class.'@destroy');
