@@ -1,0 +1,10 @@
+// Nova Tool CSS
+@media (min-width: 768px) {
+    .md\:justify-end {
+        justify-content: flex-end;
+    }
+}
+
+pre[class*=language-] {
+    margin: 16px 0 0 0 !important;
+}

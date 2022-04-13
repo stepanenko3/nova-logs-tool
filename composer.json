@@ -1,0 +1,52 @@
+{
+    "name": "stepanenko3/nova-logs-tool",
+    "description": "A Laravel Nova tool to manage and keep track of each one of your logs files.",
+    "keywords": [
+        "laravel",
+        "nova"
+    ],
+    "homepage": "https://github.com/stepanenko3/nova-logs-tool",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Artem Stepanenko",
+            "email": "stpnnk.artem@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Georges KABBOUCHI",
+            "email": "georges.kabbouchi@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.0.0",
+        "laravel/nova": "^4.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.6",
+        "phpunit/phpunit": "7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Stepanenko3\\LogsTool\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Stepanenko3\\LogsTool\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Stepanenko3\\LogsTool\\LogsToolServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
