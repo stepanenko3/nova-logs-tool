@@ -5,7 +5,7 @@
 
 A Laravel Nova tool to manage and keep track of each one of your logs files.
 
-![screenshot of the backup tool](https://raw.githubusercontent.com/stepanenko3/nova-logs-tool/master/docs/screenshot.png?20180828)
+![screenshot of the logs tool](screenshots/tool.png)
 
 > You can disable `laravel-ward` routes by adding `LOG_VIEWER_ENABLE_ROUTES=false` to `.env` file
 
@@ -74,6 +74,18 @@ Possible environment variables:
 NOVA_LOGS_PER_PAGE=6
 NOVA_LOGS_REGEX_FOR_FILES="/^laravel/"
 ```
+
+### Screenshots
+
+![screenshot of the logs tool](screenshots/tool.png)
+
+![screenshot of the logs tool](screenshots/tool-dark.png)
+
+
+![screenshot of the logs tool](screenshots/tool-mobile.png)
+
+![screenshot of the logs tool](screenshots/modal.png)
+
 
 ### Testing
 
