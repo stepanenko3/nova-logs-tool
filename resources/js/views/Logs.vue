@@ -45,7 +45,7 @@
                 <SelectControl
                     size="lg"
                     :options="files"
-                    :value="file"
+                    v-model:selected="file"
                     @input="file = $event.target.value"
                     @change="changeFile"
                 />
