@@ -9,8 +9,6 @@ Original repository https://github.com/KABBOUCHI/nova-logs-tool
 
 ![screenshot of the logs tool](screenshots/tool.png)
 
-> You can disable `laravel-ward` routes by adding `LOG_VIEWER_ENABLE_ROUTES=false` to `.env` file
-
 ## Installation
 
 You can install the package in to a Laravel app that uses [Nova](https://nova.laravel.com) via composer:
