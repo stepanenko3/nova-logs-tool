@@ -71,6 +71,7 @@
                                     <th class="text-center px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2">
                                         {{ __('Message') }}
                                     </th>
+                                    <th class="text-center px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2"></th>
                                 </tr>
                             </thead>
 
@@ -95,7 +96,7 @@
                                         {{ log.text }}
                                     </td>
 
-                                    <td class="td-fit text-right pr-6">
+                                    <td class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900">
                                         <span @click="viewLog(log)">
                                             <Icon type="eye" view-box="0 0 24 24" width="24" height="24" />
                                         </span>
