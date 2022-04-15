@@ -78,7 +78,13 @@
                                 <tr class="hover:bg-blue-lightest">
                                     <td class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900">
                                         <span class="whitespace-no-wrap flex items-center">
-                                            <Icon :type="icons[log.level] || 'error'" view-box="0 0 24 24" width="24" height="24" />
+                                            <Icon
+                                                :type="icons[log.level || 'error']"
+                                                view-box="0 0 24 24"
+                                                width="24"
+                                                height="24"
+                                                :style="{ color: colors[log.level || 'error'] }"
+                                            />
                                             <span class="ml-2">{{ log.level }}</span>
                                         </span>
                                     </td>
@@ -160,7 +166,14 @@
             <div class="mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                 <div class="p-6">
                     <Heading level="2" class="whitespace-no-wrap flex items-center justify-center">
-                        <Icon :type="icons[showLog.level] || 'error'" view-box="0 0 24 24" width="32" height="32" />
+                        <Icon
+                            :type="icons[showLog.level || 'error']"
+                            view-box="0 0 24 24"
+                            width="32"
+                            height="32"
+                            :style="{ color: colors[showLog.level || 'error'] }"
+                        />
+
                         <span class="ml-2">{{ showLog.level.toUpperCase() }}</span>
                     </Heading>
 
@@ -233,13 +246,24 @@ export default {
             showLog: null,
             permissions: {},
             icons: {
-                error: 'exclamation-circle',
-                info: 'information-circle',
-                emergency: 'speakerphone',
                 alert: 'bell',
                 critical: 'shield-exclamation',
-                notice: 'annotation',
                 debug: 'code',
+                emergency: 'speakerphone',
+                error: 'exclamation-circle',
+                info: 'information-circle',
+                notice: 'annotation',
+                warning: 'exclamation',
+            },
+            colors: {
+                alert: '#D32F2F',
+                critical: '#F44336',
+                debug: '#90CAF9',
+                emergency: '#B71C1C',
+                error: '#FF5722',
+                info: '#1976D2',
+                notice: '#4CAF50',
+                warning: '#FF9100',
             },
         };
     },
