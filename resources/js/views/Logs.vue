@@ -96,7 +96,7 @@
                                         {{ log.text }}
                                     </td>
 
-                                    <td class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900">
+                                    <td class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900 text-right">
                                         <span @click="viewLog(log)">
                                             <Icon type="eye" view-box="0 0 24 24" width="24" height="24" />
                                         </span>
