@@ -58,7 +58,7 @@
             </div>
             <template v-else>
                 <Card>
-                    <div class="overflow-hidden overflow-x-auto relative">
+                    <div class="overflow-y-hidden overflow-x-auto relative">
                         <table v-if="logs.data.length > 0" class="w-full table-default">
                             <thead>
                                 <tr>
