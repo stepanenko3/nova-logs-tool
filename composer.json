@@ -23,18 +23,15 @@
         "php": ">=8.0.0",
         "laravel/nova": "^4.0"
     },
-    "require-dev": {
-        "orchestra/testbench": "^3.6",
-        "phpunit/phpunit": "7.1"
-    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../nova"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Stepanenko3\\LogsTool\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Stepanenko3\\LogsTool\\Tests\\": "tests"
         }
     },
     "extra": {
