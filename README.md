@@ -2,6 +2,8 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/stepanenko3/nova-logs-tool.svg?style=flat-square)](https://packagist.org/packages/stepanenko3/nova-logs-tool)
 [![Total Downloads](https://img.shields.io/packagist/dt/stepanenko3/nova-logs-tool.svg?style=flat-square)](https://packagist.org/packages/stepanenko3/nova-logs-tool)
+[![License](https://poser.pugx.org/stepanenko3/nova-logs-tool/license)](https://packagist.org/packages/stepanenko3/nova-logs-tool)
+
 
 A Laravel Nova tool to manage and keep track of each one of your logs files.
 
