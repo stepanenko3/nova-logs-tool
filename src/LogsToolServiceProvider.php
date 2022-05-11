@@ -31,12 +31,12 @@ class LogsToolServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerRoutes();
-
         $this->mergeConfigFrom(
             __DIR__ . '/../config/nova-logs-tool.php',
             'nova-logs-tool',
         );
+
+        $this->registerRoutes();
     }
 
     /**

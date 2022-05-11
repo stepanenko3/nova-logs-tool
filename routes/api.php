@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Stepanenko3\LogsTool\Http\Controllers\LogsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,8 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('logs', \Stepanenko3\LogsTool\Http\Controllers\LogsController::class.'@index');
-Route::get('logs/permissions', \Stepanenko3\LogsTool\Http\Controllers\LogsController::class.'@permissions');
-Route::get('logs/{log}', \Stepanenko3\LogsTool\Http\Controllers\LogsController::class.'@show')->where(['log' => '.*']);
-Route::get('daily-log-files', \Stepanenko3\LogsTool\Http\Controllers\LogsController::class.'@dailyLogFiles');
-Route::delete('logs', \Stepanenko3\LogsTool\Http\Controllers\LogsController::class.'@destroy');
+Route::controller(LogsController::class)->group(function () {
+    Route::get('logs', 'index');
+    Route::get('logs/permissions', 'permissions');
+    Route::get('logs/{log}', 'show')->where(['log' => '.*']);
+    Route::get('daily-log-files', 'dailyLogFiles');
+    Route::delete('logs', 'destroy');
+});

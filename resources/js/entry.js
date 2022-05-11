@@ -1,3 +1,5 @@
+import Tool from './pages/Tool'
+
 Nova.booting((Vue, router, store) => {
-    Nova.inertia('NovaLogs', require('./views/Logs').default);
+    Nova.inertia('NovaLogs', Tool);
 });
