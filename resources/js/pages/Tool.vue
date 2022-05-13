@@ -88,19 +88,19 @@
             <template v-else>
                 <Card>
                     <div class="overflow-y-hidden overflow-x-auto relative">
-                        <table v-if="logs.data.length > 0" class="w-full table-default">
+                        <table v-if="logs.data.length > 0" class="w-full table-default sticky-last-column">
                             <thead>
                                 <tr>
                                     <th
-                                        class="text-center px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2">
+                                        class="text-left px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2">
                                         {{ __('Level') }}
                                     </th>
                                     <th
-                                        class="text-center px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2">
+                                        class="text-left px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2">
                                         {{ __('Created at') }}
                                     </th>
                                     <th
-                                        class="text-center px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2">
+                                        class="text-left px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2">
                                         {{ __('Message') }}
                                     </th>
                                     <th
@@ -467,3 +467,18 @@
         }
     };
 </script>
+
+<style>
+    table.sticky-last-column tr td:last-child {
+        --tw-border-opacity: 1;
+        background-color: rgba(var(--colors-gray-100),var(--tw-bg-opacity));
+        right: 0;
+        position: sticky;
+        z-index: 10;
+        width: 41px;
+    }
+
+    .dark table.sticky-last-column tr td:last-child {
+        background-color: rgba(var(--colors-gray-700),var(--tw-border-opacity));
+    }
+</style>
