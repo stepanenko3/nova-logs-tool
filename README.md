@@ -4,12 +4,11 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/stepanenko3/nova-logs-tool.svg?style=flat-square)](https://packagist.org/packages/stepanenko3/nova-logs-tool)
 [![License](https://poser.pugx.org/stepanenko3/nova-logs-tool/license)](https://packagist.org/packages/stepanenko3/nova-logs-tool)
 
-
 A Laravel Nova tool to manage and keep track of each one of your logs files.
 
-Original repository https://github.com/KABBOUCHI/nova-logs-tool
+> Original repository https://github.com/KABBOUCHI/nova-logs-tool
 
-![screenshot of the logs tool](screenshots/tool.png)
+![screenshot of tool](screenshots/tool.png)
 
 ## Installation
 
@@ -79,14 +78,11 @@ NOVA_LOGS_REGEX_FOR_FILES="/^laravel/"
 
 ### Screenshots
 
-![screenshot of the logs tool](screenshots/tool.png)
-
 ![screenshot of the logs tool](screenshots/tool-dark.png)
-
-
+![screenshot of the logs tool](screenshots/tool-detail.png)
+![screenshot of the logs tool](screenshots/tool-detail-dark.png)
 ![screenshot of the logs tool](screenshots/tool-mobile.png)
-
-![screenshot of the logs tool](screenshots/modal.png)
+![screenshot of the logs tool](screenshots/tool-mobile-dark.png)
 
 
 ### Testing

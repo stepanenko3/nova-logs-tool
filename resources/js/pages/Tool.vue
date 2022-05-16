@@ -38,7 +38,7 @@
                     @change="changeFile" />
 
                 <div
-                    class="md:ml-2 inline-flex items-center shadow rounded-lg bg-white dark:bg-gray-800 px-2 h-8"
+                    class="ml-2 inline-flex items-center shadow rounded-lg bg-white dark:bg-gray-800 px-2 h-8"
                 >
                     <ToolbarButton
                         @click.prevent="getLogs"
