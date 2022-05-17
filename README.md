@@ -84,13 +84,6 @@ NOVA_LOGS_REGEX_FOR_FILES="/^laravel/"
 ![screenshot of the logs tool](screenshots/tool-mobile.png)
 ![screenshot of the logs tool](screenshots/tool-mobile-dark.png)
 
-
-### Testing
-
-``` bash
-composer test
-```
-
 ### Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
