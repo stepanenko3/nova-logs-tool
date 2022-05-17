@@ -4,12 +4,28 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/stepanenko3/nova-logs-tool.svg?style=flat-square)](https://packagist.org/packages/stepanenko3/nova-logs-tool)
 [![License](https://poser.pugx.org/stepanenko3/nova-logs-tool/license)](https://packagist.org/packages/stepanenko3/nova-logs-tool)
 
-A Laravel Nova tool to manage and keep track of each one of your logs files.
-
-> Original repository https://github.com/KABBOUCHI/nova-logs-tool
-
 ![screenshot of tool](screenshots/tool.png)
 
+## Description
+
+A Laravel Nova tool to manage and keep track of each one of your logs files.
+
+> ЭThat repository is an extended version of [KABBOUCHI/nova-logs-tool](https://github.com/KABBOUCHI/nova-logs-tool)
+
+## Features
+
+- Polling
+- Refresh button
+- Logs from nested directories
+- Sticky "view" button
+- Dark mode
+- Responsiver
+
+## Requirements
+
+- `php: >=8.0`
+- `laravel/nova: ^4.0`
+- 
 ## Installation
 
 You can install the package in to a Laravel app that uses [Nova](https://nova.laravel.com) via composer:
