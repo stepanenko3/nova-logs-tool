@@ -1,4 +1,4 @@
-# Nova tool to for logs
+# Nova tool to view logs
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/stepanenko3/nova-logs-tool.svg?style=flat-square)](https://packagist.org/packages/stepanenko3/nova-logs-tool)
 [![Total Downloads](https://img.shields.io/packagist/dt/stepanenko3/nova-logs-tool.svg?style=flat-square)](https://packagist.org/packages/stepanenko3/nova-logs-tool)
@@ -10,7 +10,7 @@
 
 A Laravel Nova tool to manage and keep track of each one of your logs files.
 
-> ЭThat repository is an extended version of [KABBOUCHI/nova-logs-tool](https://github.com/KABBOUCHI/nova-logs-tool)
+> That repository is an extended version of [KABBOUCHI/nova-logs-tool](https://github.com/KABBOUCHI/nova-logs-tool)
 
 ## Features
 
@@ -19,7 +19,7 @@ A Laravel Nova tool to manage and keep track of each one of your logs files.
 - Logs from nested directories
 - Sticky "view" button
 - Dark mode
-- Responsiver
+- Responsive
 
 ## Requirements
 
