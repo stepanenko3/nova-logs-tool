@@ -92,7 +92,7 @@ class LogsService
         $logFile = self::pathToLogFile($logFile);
 
         if (File::size($logFile) > self::MAX_FILE_SIZE) {
-            return;
+            return $log;
         }
 
         $file = File::get($logFile);
