@@ -2,6 +2,7 @@
 
 namespace Stepanenko3\LogsTool;
 
+use Exception;
 use Illuminate\Support\Facades\File;
 
 class LogsService
@@ -11,9 +12,9 @@ class LogsService
     /**
      * @var string file
      */
-    private static $file;
+    private static string $file;
 
-    private static $levels_classes = [
+    private static array $levels_classes = [
         'debug'     => 'text-blue',
         'info'      => 'text-blue',
         'notice'    => 'text-blue',
@@ -25,7 +26,7 @@ class LogsService
         'processed' => 'text-blue',
     ];
 
-    private static $levels_imgs = [
+    private static array $levels_imgs = [
         'debug'     => 'exclamation-circle',
         'info'      => 'exclamation-circle',
         'notice'    => 'exclamation-circle',
@@ -42,7 +43,7 @@ class LogsService
      *
      * @var array
      */
-    private static $log_levels = [
+    private static array $log_levels = [
         'emergency',
         'alert',
         'critical',
@@ -58,22 +59,24 @@ class LogsService
      * @param  string  $file
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
-    public static function pathToLogFile($file)
+    public static function pathToLogFile($file): string
     {
         $file = storage_path('logs/' . $file);
         if (!File::exists($file)) {
-            throw new \Exception('No such log file');
+            throw new Exception('No such log file');
         }
 
         return $file;
     }
 
     /**
+     * @param $logFile
      * @return array
+     * @throws Exception
      */
-    public static function all($logFile)
+    public static function all($logFile): array
     {
         $log = [];
         $pattern = '/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}([\+-]\d{4})?\].*/';
@@ -119,7 +122,7 @@ class LogsService
                             'level_img'   => self::$levels_imgs[$level],
                             'date'        => $current[1],
                             'text'        => $current[4],
-                            'in_file'     => isset($current[5]) ? $current[5] : null,
+                            'in_file'     => $current[5] ?? null,
                             'stack'       => preg_replace("/^\n*/", '', $log_data[$i])
                         ];
                     }
@@ -133,12 +136,12 @@ class LogsService
     /**
      * @return array
      */
-    public static function getFiles()
+    public static function getFiles(): array
     {
         $logsPath = storage_path('logs');
         $files = File::allFiles($logsPath);
-        return collect($files)
+        return array_reverse(collect($files)
             ->map(fn ($file) => $file->getRelativePathname())
-            ->toArray();
+            ->toArray());
     }
 }
