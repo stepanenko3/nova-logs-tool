@@ -15,15 +15,15 @@ class LogsService
     private static string $file;
 
     private static array $levels_classes = [
-        'debug'     => 'text-blue',
-        'info'      => 'text-blue',
-        'notice'    => 'text-blue',
-        'warning'   => 'text-orange',
-        'error'     => 'text-red',
-        'critical'  => 'text-red',
-        'alert'     => 'text-red',
-        'emergency' => 'text-red',
-        'processed' => 'text-blue',
+        'debug'     => 'text-sky-500',
+        'info'      => 'text-sky-500',
+        'notice'    => 'text-sky-500',
+        'warning'   => 'text-yellow-500',
+        'error'     => 'text-red-500',
+        'critical'  => 'text-red-500',
+        'alert'     => 'text-red-500',
+        'emergency' => 'text-red-500',
+        'processed' => 'text-sky-500',
     ];
 
     private static array $levels_imgs = [
