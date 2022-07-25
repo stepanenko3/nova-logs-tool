@@ -92,6 +92,52 @@ NOVA_LOGS_PER_PAGE=6
 NOVA_LOGS_REGEX_FOR_FILES="/^laravel/"
 ```
 
+## Show latest logs on Dashboard
+
+Create Metric class in app/Nova/Metrics
+
+```php
+<?php
+
+namespace App\Nova\Metrics;
+
+use Carbon\Carbon;
+use Laravel\Nova\Metrics\MetricTableRow;
+use Laravel\Nova\Metrics\Table;
+use Stepanenko3\LogsTool\LogsService;
+
+class LatestLogs extends Table
+{
+    public function __construct(
+        protected string $file = 'laravel.log',
+        protected int $countLastRow = 3,
+    ) {
+        //
+    }
+
+    public function calculate()
+    {
+        $lines = array_slice(LogsService::all($this->file), 0, $this->countLastRow);
+
+        foreach ($lines as $line) {
+            $rows[] = MetricTableRow::make()
+                ->icon($line['level_img'])
+                ->iconClass($line['level_class'])
+                ->title($line['text'])
+                ->subtitle(Carbon::create($line['date'])->diffForHumans());
+        }
+
+        return $rows;
+    }
+}
+```
+
+Add Metric declaration code to Cards method of Dashboard class
+
+```php
+(new LatestLogs('laravel.log', 5)),
+```
+
 ### Screenshots
 
 ![screenshot of the logs tool](screenshots/tool-dark.png)
