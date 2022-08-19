@@ -146,6 +146,7 @@ class LogsService
 
         switch(config('nova-logs-tool.filesOrder')) {
             case 'name':
+            case 'name_asc':
                 $files = $files->sort();
                 break;
 
