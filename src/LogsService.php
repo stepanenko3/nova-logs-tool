@@ -140,8 +140,24 @@ class LogsService
     {
         $logsPath = storage_path('logs');
         $files = File::allFiles($logsPath);
-        return array_reverse(collect($files)
-            ->map(fn ($file) => $file->getRelativePathname())
-            ->toArray());
+
+        $files = collect($files)
+            ->map(fn ($file) => $file->getRelativePathname());
+
+        switch(config('nova-logs-tool.filesOrder')) {
+            case 'name':
+                $files = $files->sort();
+                break;
+
+            case 'name_desc':
+                $files = $files->sortDesc();
+                break;
+
+            case 'last_modified':
+            default:
+                $files = $files->sortBy(fn ($path) => File::lastModified(storage_path('logs/' . $path)));
+        }
+
+        return $files->toArray();
     }
 }

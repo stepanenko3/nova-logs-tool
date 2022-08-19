@@ -37,9 +37,10 @@ class LogsController extends Controller
 
     public function dailyLogFiles()
     {
-        return collect(LogsService::getFiles(true))->filter(function ($file) {
-            return preg_match(config('nova-logs-tool.regexForFiles'), $file);
-        })->values()->all();
+        return collect(LogsService::getFiles(true))
+            ->filter(fn ($file) =>preg_match(config('nova-logs-tool.regexForFiles'), $file))
+            ->values()
+            ->all();
     }
 
     /**
