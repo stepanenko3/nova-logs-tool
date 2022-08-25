@@ -10,32 +10,12 @@ use Laravel\Nova\Nova;
 class LogsToolServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        if ($this->app->runningInConsole()) {
-            // Publish config
-            $this->publishes([
-                __DIR__ . '/../config/' => config_path(),
-            ], 'config');
-        }
-    }
-
-    /**
      * Register any application services.
      *
      * @return void
      */
     public function register()
     {
-        $this->mergeConfigFrom(
-            __DIR__ . '/../config/nova-logs-tool.php',
-            'nova-logs-tool',
-        );
-
         $this->registerRoutes();
     }
 

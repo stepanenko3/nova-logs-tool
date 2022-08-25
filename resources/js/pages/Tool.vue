@@ -4,7 +4,7 @@
 
         <div
             v-if="files.length > 0"
-            class="grid gap-6 md:grid-cols-12 mb-4"
+            class="grid gap-2 md:gap-6 md:grid-cols-12 mb-4"
         >
             <div class="relative h-9 md:col-span-4">
                 <Icon
@@ -18,9 +18,9 @@
                     class="appearance-none g-white dark:bg-gray-800 shadow rounded-full h-8 w-full dark:focus:bg-gray-800"
                     :placeholder="__('Search')"
                     spellcheck="false"
-                    :aria-label="__('Search')" type="search"
-                    @input="search = $event.target.value"
-                    @keydown.stop="performSearch"
+                    :aria-label="__('Search')"
+                    type="text"
+                    @input="performSearch"
                 />
             </div>
 
@@ -28,17 +28,38 @@
 
             <div
                 v-if="files.length"
-                class="md:col-span-4 md:justify-end flex items-center"
+                class="md:col-span-4 md:justify-end flex items-center flex-wrap"
                 :class="{ disabled: loading }"
             >
-                <SelectControl
-                    :options="files"
-                    v-model:selected="file"
-                    @input="file = $event.target.value"
-                    @change="changeFile" />
+                <Dropdown class="hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
+                    <DropdownTrigger class="toolbar-button whitespace-nowrap px-2">
+                        {{ file }}
+                    </DropdownTrigger>
+
+                    <template #menu>
+                        <DropdownMenu
+                            class="divide-y divide-gray-100 dark:divide-gray-800 divide-solid"
+                            width="auto"
+                        >
+                            <DropdownMenuItem
+                                v-for="signleFile in files"
+                                :key="signleFile.name"
+                                :onclick="(() => changeFile(signleFile.name))"
+                                class="px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                :class="{ active: signleFile.name === file }"
+                            >
+                                {{ signleFile.name }}
+
+                                <b>
+                                    {{ signleFile.sizeFormatted }}
+                                </b>
+                            </DropdownMenuItem>
+                        </DropdownMenu>
+                    </template>
+                </Dropdown>
 
                 <div
-                    class="ml-2 inline-flex items-center shadow rounded-lg bg-white dark:bg-gray-800 px-2 h-8"
+                    class="md:ml-2 inline-flex items-center shadow rounded-lg bg-white dark:bg-gray-800 px-2 h-8"
                 >
                     <ToolbarButton
                         @click.prevent="getLogs"
@@ -58,20 +79,78 @@
                     />
 
                     <ToolbarButton
-                        v-if="permissions.canDownload"
+                        v-if="file && permissions.canDownload"
                         @click.prevent="download"
                         type="download"
                         v-tooltip="__('Download')"
                     />
 
                     <ToolbarButton
-                        v-if="permissions.canDelete"
+                        v-if="file && permissions.canDelete"
                         @click.prevent="openDeleteModal"
                         type="trash"
                         v-tooltip="__('Delete')"
                     />
+
+                    <ToolbarButton
+                        v-if="file"
+                        @click.prevent="cacheClear"
+                        type="database"
+                        v-tooltip="__('Cache Clear')"
+                    />
                 </div>
             </div>
+        </div>
+
+        <div v-if="levels.length" class="flex mb-4 overflow-y-hidden overflow-x-auto relative">
+            <template
+                v-for="item in (levels.filter(n => n.count))"
+            >
+                <DefaultButton
+                    v-if="item.selected"
+                    @click="toggleLevel(item.level.value)"
+                    class="mr-2"
+                    :style="{
+                        'background-color': colors[item.level.value || 'error'],
+                        'border': 'none',
+                        'color': '#fff'
+                    }"
+                >
+                    <Icon
+                        :type="icons[item.level.value || 'error']"
+                        view-box="0 0 24 24"
+                        width="18"
+                        height="18"
+                        class="mr-1"
+                    />
+
+                    {{ capitalizeFirstLetter(item.level.value) }}:
+
+                    <span class="text-xs opacity-75 ml-1">
+                        {{ item.count }}
+                    </span>
+                </DefaultButton>
+
+                <OutlineButton
+                    v-else
+                    @click="toggleLevel(item.level.value)"
+                    class="mr-2"
+                >
+                    <Icon
+                        :type="icons[item.level.value || 'error']"
+                        view-box="0 0 24 24"
+                        width="18"
+                        height="18"
+                        class="mr-1"
+                    />
+
+                    {{ capitalizeFirstLetter(item.level.value) }}:
+
+                    <span class="text-xs opacity-75 ml-1">
+                        {{ item.count }}
+                    </span>
+                </OutlineButton>
+            </template>
         </div>
 
         <div
@@ -88,20 +167,29 @@
             <template v-else>
                 <Card>
                     <div class="overflow-y-hidden overflow-x-auto relative">
-                        <table v-if="logs.data.length > 0" class="w-full table-default sticky-last-column">
+                        <table v-if="logs.data.length > 0" class="w-full table-default">
                             <thead>
                                 <tr>
+                                    <th class="text-left px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2"></th>
                                     <th
                                         class="text-left px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2">
                                         {{ __('Level') }}
                                     </th>
                                     <th
                                         class="text-left px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2">
-                                        {{ __('Created at') }}
+                                        {{ __('Time') }}
                                     </th>
                                     <th
                                         class="text-left px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2">
-                                        {{ __('Message') }}
+                                        {{ __('Env') }}
+                                    </th>
+                                    <th
+                                        class="text-left px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2 w-full">
+                                        {{ __('Description') }}
+                                    </th>
+                                    <th
+                                        class="text-left px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2">
+                                        {{ __('Line') }}
                                     </th>
                                     <th
                                         class="text-center px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2">
@@ -112,29 +200,39 @@
                             <tbody v-for="(log, index) in logs.data">
                                 <tr class="hover:bg-blue-lightest">
                                     <td
-                                        class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900">
-                                        <span class="whitespace-no-wrap flex items-center">
-                                            <Icon
-                                                :type="icons[log.level || 'error']"
-                                                view-box="0 0 24 24"
-                                                width="24"
-                                                height="24"
-                                                :style="{ color: colors[log.level || 'error'] }"
-                                            />
-                                            <span class="ml-2">
-                                                {{ log.level }}
-                                            </span>
-                                        </span>
+                                        class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900"
+                                    >
+                                        <Icon
+                                            :type="icons[log.level.value || 'error']"
+                                            view-box="0 0 24 24"
+                                            width="24"
+                                            height="24"
+                                            :style="{ color: colors[log.level.value || 'error'] }"
+                                        />
                                     </td>
                                     <td
-                                        class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900">
-                                        {{ log.date }}
+                                        class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900"
+                                        :style="{ color: colors[log.level.value || 'error'] }"
+                                    >
+                                        {{ capitalizeFirstLetter(log.level.value) }}
                                     </td>
                                     <td
-                                        class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900">
+                                        class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900 text-gray-900 dark:text-gray-400">
+                                        {{ formattedDateTime(log.time) }}
+                                    </td>
+                                    <td
+                                        class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900"
+                                    >
+                                        {{ log.environment }}
+                                    </td>
+                                    <td
+                                        class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900 w-full truncate max-w-1 min-w-200">
                                         {{ log.text }}
                                     </td>
-
+                                    <td
+                                        class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900">
+                                        {{ log.index }}
+                                    </td>
                                     <td
                                         class="px-2 py-2 border-t border-gray-100 dark:border-gray-700 whitespace-nowrap cursor-pointer dark:bg-gray-800 group-hover:bg-gray-50 dark:group-hover:bg-gray-900 text-right">
                                         <span @click="viewLog(log)">
@@ -171,33 +269,44 @@
                         <nav v-if="logs.data.length > 0" class="flex justify-between">
                             <!-- Previous Link -->
                             <button
-                                :disabled="!hasPreviousPages"
+                                :disabled="logs.onFirstPage"
                                 class="btn btn-link py-3 px-4"
                                 :class="{
-                                    'text-primary dim': hasPreviousPages,
-                                    'text-80 opacity-50': !hasPreviousPages
+                                    'text-primary dim': !logs.onFirstPage,
+                                    'text-80 opacity-50': logs.onFirstPage
                                 }"
                                 rel="prev"
-                                @click.prevent="selectPreviousPage"
+                                @click.prevent="getLogs(logs.prevPage)"
                                 dusk="previous"
                             >
                                 {{ __('Previous') }}
                             </button>
 
-                            <button class="btn btn-link py-3 px-4 text-50 dim">
-                                {{ logs.current_page }} / {{ Math.ceil(logs.total / logs.per_page) }}
-                            </button>
+                            <div class="hidden md:flex">
+                                <button
+                                    class="btn btn-link py-3 px-3 text-50 dim"
+                                    v-for="page in logs.elements"
+                                    :class="{
+                                        'text-primary dim': page.active,
+                                        'text-80 opacity-50': !page.active
+                                    }"
+                                    :disabled="page.page === logs.currentPage || typeof page.page !== 'number'"
+                                    @click.prevent="getLogs(page.page)"
+                                >
+                                    {{ page.page }}
+                                </button>
+                            </div>
 
                             <!-- Next Link -->
                             <button
-                                :disabled="!hasMorePages"
+                                :disabled="!logs.hasMorePages"
                                 class="btn btn-link py-3 px-4"
                                 :class="{
-                                    'text-primary dim': hasMorePages,
-                                    'text-80 opacity-50': !hasMorePages
+                                    'text-primary dim': logs.hasMorePages,
+                                    'text-80 opacity-50': !logs.hasMorePages
                                 }"
                                 rel="next"
-                                @click.prevent="selectNextPage()"
+                                @click.prevent="getLogs(logs.nextPage)"
                                 dusk="next"
                             >
                                 {{ __('Next') }}
@@ -205,6 +314,17 @@
                         </nav>
                     </div>
                 </Card>
+
+                <div
+                    v-if="memoryUsage && requestTime"
+                    class="text-right px-4 mt-2"
+                >
+                    <p class="text-xs text-gray-400">
+                        Memory: <span class="font-semibold">{{ memoryUsage }}</span>,
+                        Duration: <span class="font-semibold">{{ requestTime }}</span>
+                    </p>
+                </div>
+
             </template>
         </div>
 
@@ -219,34 +339,30 @@
                 <div class="p-6">
                     <Heading level="2" class="whitespace-no-wrap flex items-center justify-center">
                         <Icon
-                            :type="icons[showLog.level || 'error']"
+                            :type="icons[showLog.level.value || 'error']"
                             view-box="0 0 24 24"
                             width="32"
                             height="32"
-                            :style="{ color: colors[showLog.level || 'error'] }"
+                            :style="{ color: colors[showLog.level.value || 'error'] }"
                         />
 
                         <span class="ml-2">
-                            {{ showLog.level.toUpperCase() }}
+                            {{ showLog.level.value.toUpperCase() }}
                         </span>
                     </Heading>
 
                     <div class="mt-3 mb-4 text-center">
-                        {{ showLog.date }}
+                        {{ showLog.environment }}
+                    </div>
+
+                    <div class="mt-3 mb-4 text-center">
+                        {{ formattedDateTime(showLog.time) }}
                     </div>
 
                     <pre
-                        ref="outputCodeMessage"
-                        v-if="showLog.text"
-                        v-text="'[message]\n' + showLog.text"
-                        class="mb-4 block p-4 rounded-lg bg-gray-100 dark:bg-gray-900 w-full text-left"
-                        style="white-space: pre-wrap; word-wrap: break-word"
-                    ></pre>
-
-                    <pre
                         ref="outputCodeStack"
-                        v-if="showLog.stack"
-                        v-text="showLog.stack"
+                        v-if="showLog.fullText"
+                        v-text="showLog.fullText"
                         class="block p-4 rounded-lg bg-gray-100 dark:bg-gray-900 w-full text-left"
                         style="white-space: pre-wrap; word-wrap: break-word"
                     ></pre>
@@ -282,6 +398,7 @@
 <script>
     import api from '../api';
     import ToolbarButton from '../components/ToolbarButton'
+    import { DateTime } from 'luxon'
 
     export default {
         components: {
@@ -294,22 +411,30 @@
             interval: null,
 
             search: null,
-            file: 'laravel.log',
+            file: '',
 
-            files: [],
+            levels: [],
+            selectedLevels: null,
+
+            memoryUsage: null,
+            requestTime: null,
+
             logs: {
                 total: 0,
                 per_page: 2,
                 from: 1,
                 to: 0,
                 data: false,
-                current_page: 1
+                current_page: 1,
             },
+
+            files: [],
 
             deleteModalOpen: false,
             showLog: null,
 
             permissions: {},
+
             icons: {
                 alert: 'bell',
                 critical: 'shield-exclamation',
@@ -320,6 +445,7 @@
                 notice: 'annotation',
                 warning: 'exclamation',
             },
+
             colors: {
                 alert: '#D32F2F',
                 critical: '#F44336',
@@ -330,6 +456,8 @@
                 notice: '#4CAF50',
                 warning: '#FF9100',
             },
+
+            searchTimeout: null,
         }),
 
         mounted() {
@@ -343,27 +471,39 @@
         async created() {
             document.addEventListener('keydown', this.handleKeydown);
             await this.getLogsPermissions();
-            await this.getDailyLogFiles();
             await this.getLogs();
         },
 
-        computed: {
-            /**
-             * Determine if prior pages are available.
-             */
-            hasPreviousPages: function () {
-                return Boolean(this.logs && this.logs.prev_page_url);
+        methods: {
+            capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
             },
 
-            /**
-             * Determine if more pages are available.
-             */
-            hasMorePages: function () {
-                return Boolean(this.logs && this.logs.next_page_url);
-            }
-        },
+            toggleLevel(level) {
+                const index = this.selectedLevels.indexOf(level);
 
-        methods: {
+                if (index === -1) {
+                    this.selectedLevels.push(level);
+                } else {
+                    this.selectedLevels.splice(index, 1);
+                }
+
+                this.getLogs();
+            },
+
+            formattedDateTime(value) {
+                return DateTime.fromISO(value)
+                    .setZone(Nova.config('userTimezone') || Nova.config('timezone'))
+                    .toLocaleString({
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        timeZoneName: 'short',
+                    });
+            },
+
             handleKeydown(e) {
                 if (e.code === 'Escape') {
                     this.showLog = null;
@@ -379,20 +519,10 @@
                     .then(permissions => this.permissions = permissions);
             },
 
-            getDailyLogFiles() {
-                return api.getDailyLogFiles().then(files => {
-                    if (files.length) {
-                        this.file = files[0];
-                    }
-
-                    this.files = files.map(val => ({ value: val, label: val }));
-                });
-            },
-
             refresh() {
                 if (this.loading) return;
 
-                this.getLogs(this.logs.current_page);
+                this.getLogs(this.logs.currentPage);
             },
 
             getLogs(page = 1) {
@@ -405,34 +535,65 @@
             fetch(page = 1) {
                 clearInterval(this.interval);
 
-                return api.getLogs(this.file, page, this.search)
-                    .then(logs => this.logs = logs)
+                return api.getLogs(
+                    this.file,
+                    page,
+                    this.search,
+                    this.selectedLevels,
+                )
+                    .then(data => {
+                        this.files = data.files;
+
+                        if (data.file) {
+                            this.file = data.file.name;
+                            this.logs = data.file.logs;
+                            this.levels = Object.values(data.file.levels);
+                            if (this.selectedLevels === null) {
+                                this.selectedLevels = [];
+                                this.levels.map(n => {
+                                    if (!n.selected || !n.count)
+                                        return;
+
+                                    this.selectedLevels.push(n.level.value);
+                                });
+                            }
+                            this.memoryUsage = data.file.memoryUsage;
+                            this.requestTime = data.file.requestTime;
+                        }
+                    })
                     .catch(() => {
-                        this.logs.total = 0;
-                        this.logs.from = 1;
-                        this.logs.to = 0;
-                        this.logs.data = false;
-                        this.logs.current_page = 1;
+                        this.files = [];
+
+                        this.file = '';
+                        this.logs =  {
+                            total: 0,
+                            per_page: 0,
+                            from: 0,
+                            to: 0,
+                            data: [],
+                            current_page: 1,
+                        };
+                        this.levels = [];
+                        this.memoryUsage = '';
+                        this.requestTime = '';
                     })
                     .finally(() => this.setupInterval());
             },
 
-            changeFile() {
+            changeFile(fileName) {
+                this.file = fileName;
                 this.search = null;
+                this.selectedLevels = null;
+
                 this.getLogs();
             },
 
-            selectPreviousPage() {
-                this.getLogs(this.logs.current_page - 1);
-            },
-
-            selectNextPage() {
-                this.getLogs(this.logs.current_page + 1);
-            },
-
-            performSearch() {
+            performSearch(e) {
+                this.search = e.target.value;
                 this.playing = false;
-                this.$nextTick(() => this.fetch());
+
+                if (this.searchTimeout) clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => this.fetch(), 250);
             },
 
             viewLog(log) {
@@ -447,13 +608,24 @@
                 this.deleteModalOpen = false;
             },
 
+            async cacheClear() {
+                if (this.loading) return;
+
+                await api.cacheClear(this.file);
+
+                await this.getLogs();
+            },
+
             async confirmDelete() {
                 this.deleteModalOpen = false;
                 this.loading = true;
 
                 await api.deleteFile(this.file);
 
-                await this.getDailyLogFiles();
+                this.file = null;
+                this.search = null;
+                this.selectedLevels = null;
+
                 await this.getLogs();
             },
 
@@ -469,16 +641,15 @@
 </script>
 
 <style>
-    table.sticky-last-column tr td:last-child {
-        --tw-border-opacity: 1;
-        background-color: rgba(var(--colors-gray-100),var(--tw-bg-opacity));
-        right: 0;
-        position: sticky;
-        z-index: 10;
-        width: 41px;
+    .truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
-
-    .dark table.sticky-last-column tr td:last-child {
-        background-color: rgba(var(--colors-gray-700),var(--tw-border-opacity));
+    .max-w-1 {
+        max-width: 1px;
+    }
+    .min-w-200 {
+        min-width: 200px;
     }
 </style>
