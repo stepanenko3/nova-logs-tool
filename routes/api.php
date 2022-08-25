@@ -16,8 +16,15 @@ use Stepanenko3\LogsTool\Http\Controllers\LogsController;
 
 Route::controller(LogsController::class)->group(function () {
     Route::get('logs', 'index');
+
+    Route::get('logs/clearCacheAll', 'clearCacheAll');
+
     Route::get('logs/permissions', 'permissions');
-    Route::get('logs/{log}', 'show')->where(['log' => '.*']);
-    Route::get('daily-log-files', 'dailyLogFiles');
-    Route::delete('logs', 'destroy');
+
+    Route::delete('logs/cache', 'cacheClear');
+
+    Route::get('logs/{log}', 'download')
+        ->where(['log' => '.*']);
+
+    Route::delete('logs', 'delete');
 });

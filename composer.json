@@ -12,16 +12,12 @@
             "name": "Artem Stepanenko",
             "email": "stpnnk.artem@gmail.com",
             "role": "Developer"
-        },
-        {
-            "name": "Georges KABBOUCHI",
-            "email": "georges.kabbouchi@gmail.com",
-            "role": "Developer"
         }
     ],
     "require": {
         "php": ">=8.0.0",
-        "laravel/nova": "^4.0"
+        "laravel/nova": "^4.0",
+        "stepanenko3/laravel-log-viewer": "*"
     },
     "repositories": [
         {

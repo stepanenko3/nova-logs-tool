@@ -6,41 +6,75 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
-use Stepanenko3\LogsTool\LogsService;
 use Stepanenko3\LogsTool\LogsTool;
+use Stepanenko3\LaravelLogViewer\Facades\LogViewer;
+use Stepanenko3\LaravelLogViewer\LogFile;
 
 class LogsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $file = request()->input('file', 'laravel.log');
-        $logs = LogsService::all($file);
+        $currentPage = (int) LengthAwarePaginator::resolveCurrentPage();
+        $perPage = (int) config('log-viewer.per_page');
 
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $file = (string) $request->input('file', '');
+        $search = (string) $request->input('search', '');
 
-        $collection = collect($logs);
+        $selectedLevels = null;
+        if ($request->has('selectedLevels')) {
+            $selectedLevels = [];
 
-        $search = request()->input('search');
+            $tmpLevels = $request->input('selectedLevels');
 
-        if ($search) {
-            $collection = $collection->filter(function ($log) use ($search) {
-                return false !== stristr($log['text'], $search);
-            });
+            if ($tmpLevels) {
+                $selectedLevels = explode(',', $tmpLevels);
+            }
         }
 
-        $perPage = config('nova-logs-tool.perPage');
+        $files = LogFile::all()
+            ->map(function ($file) {
+                $file->sizeFormatted = $file->sizeFormatted();
 
-        $currentPageSearchResults = $collection->slice(($currentPage - 1) * $perPage, $perPage)->values()->toArray();
+                return $file;
+            });
 
-        return new LengthAwarePaginator($currentPageSearchResults, count($collection), $perPage);
+        if (!$file) {
+            $file = $files->first()->name;
+        }
+
+        $selectedFile = LogFile::get(
+            selectedFileName: $file,
+            query: $search,
+            selectedLevels: $selectedLevels,
+            page: $currentPage,
+            perPage: $perPage,
+            direction: LogFile::NEWEST_FIRST,
+        );
+
+        return response()->json([
+            'files' => $files,
+            'file' => [
+                'name' => $selectedFile['file']->name,
+                'path' => $selectedFile['file']->path,
+                'levels' => $selectedFile['levels'],
+                'logs' => $selectedFile['logs'],
+                'memoryUsage' => $selectedFile['memoryUsage'],
+                'requestTime' => $selectedFile['requestTime'],
+            ],
+        ]);
     }
 
-    public function dailyLogFiles()
+    public function cacheClear(Request $request)
     {
-        return collect(LogsService::getFiles(true))
-            ->filter(fn ($file) =>preg_match(config('nova-logs-tool.regexForFiles'), $file))
-            ->values()
-            ->all();
+        if ($file = $request->input('file')) {
+            LogViewer::getFile($file)->clearIndexCache();
+        } else {
+            LogViewer::clearCacheAll();
+        }
+
+        return response()->json([
+            'success' => true,
+        ]);
     }
 
     /**
@@ -50,13 +84,13 @@ class LogsController extends Controller
      *
      * @throws \Exception
      */
-    public function show($log, Request $request)
+    public function download($log, Request $request)
     {
         if (!LogsTool::authorizedToDownload($request)) {
             abort(403);
         }
 
-        return response()->download(LogsService::pathToLogFile($log));
+        return LogFile::download($log);
     }
 
     /**
@@ -64,14 +98,13 @@ class LogsController extends Controller
      *
      * @throws \Exception
      */
-    public function destroy(Request $request)
+    public function delete(Request $request)
     {
         if (!LogsTool::authorizedToDelete($request)) {
             abort(403);
         }
 
-        File::delete(LogsService::pathToLogFile(request('file')));
-        cache()->clear();
+        LogFile::deleteFile($request->input('file'));
     }
 
     public function permissions(Request $request)
