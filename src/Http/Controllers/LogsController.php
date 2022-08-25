@@ -5,7 +5,6 @@ namespace Stepanenko3\LogsTool\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\File;
 use Stepanenko3\LogsTool\LogsTool;
 use Stepanenko3\LaravelLogViewer\Facades\LogViewer;
 use Stepanenko3\LaravelLogViewer\LogFile;
@@ -111,7 +110,7 @@ class LogsController extends Controller
     {
         return [
             'canDownload' => LogsTool::authorizedToDownload($request),
-            'canDelete'   => LogsTool::authorizedToDelete($request),
+            'canDelete' => LogsTool::authorizedToDelete($request),
         ];
     }
 }
