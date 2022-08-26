@@ -23,13 +23,13 @@ use Stepanenko3\LaravelLogViewer\LogFile;
 class LatestLogs extends Table
 {
     private array $levels_classes = [
-        'debug'     => 'text-sky-500',
-        'info'      => 'text-sky-500',
-        'notice'    => 'text-sky-500',
-        'warning'   => 'text-yellow-500',
-        'error'     => 'text-red-500',
-        'critical'  => 'text-red-500',
-        'alert'     => 'text-red-500',
+        'debug' => 'text-sky-500',
+        'info' => 'text-sky-500',
+        'notice' => 'text-sky-500',
+        'warning' => 'text-yellow-500',
+        'error' => 'text-red-500',
+        'critical' => 'text-red-500',
+        'alert' => 'text-red-500',
         'emergency' => 'text-red-500',
         'processed' => 'text-sky-500',
     ];
