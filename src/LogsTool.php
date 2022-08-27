@@ -25,7 +25,8 @@ class LogsTool extends Tool
     public function menu(Request $request)
     {
         return MenuSection::make('Logs')
-            ->path('/logs');
+            ->path('/logs')
+            ->icon('document-text');
     }
 
     public static function authorizedToDownload(Request $request)
