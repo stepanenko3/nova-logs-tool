@@ -24,7 +24,7 @@ class LogsTool extends Tool
 
     public function menu(Request $request)
     {
-        return MenuSection::make('Logs')
+        return MenuSection::make(__('Logs'))
             ->path('/logs')
             ->icon('document-text');
     }
