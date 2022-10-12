@@ -24,11 +24,9 @@
                 />
             </div>
 
-            <div class="md:col-span-4 hidden md:flex"></div>
-
             <div
                 v-if="files.length"
-                class="md:col-span-4 md:justify-end flex items-center flex-wrap"
+                class="md:col-span-8 md:justify-end flex items-center flex-wrap"
                 :class="{ disabled: loading }"
             >
                 <Dropdown class="hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
