@@ -38,7 +38,7 @@ class LogsController extends Controller
             });
 
         if (!$file) {
-            $file = $files->first()->name;
+             $file = $files->first()?->name ?: '';
         }
 
         $selectedFile = LogFile::get(
@@ -53,8 +53,8 @@ class LogsController extends Controller
         return response()->json([
             'files' => $files,
             'file' => [
-                'name' => $selectedFile['file']->name,
-                'path' => $selectedFile['file']->path,
+                'name' => $selectedFile['file']?->name,
+                'path' => $selectedFile['file']?->path,
                 'levels' => $selectedFile['levels'],
                 'logs' => $selectedFile['logs'],
                 'memoryUsage' => $selectedFile['memoryUsage'],
