@@ -2,34 +2,35 @@
     <div>
         <Heading class="mb-3"> {{ __('Logs') }}</Heading>
 
-        <div
-            v-if="files.length > 0"
-            class="grid gap-2 md:gap-6 md:grid-cols-12 mb-4"
-        >
+        <div class="grid gap-2 md:gap-6 md:grid-cols-12 mb-4">
             <div class="relative h-9 md:col-span-4">
-                <Icon
-                    type="search"
-                    width="20"
-                    class="absolute ml-2 text-gray-400"
-                    :style="{ top: '4px' }"
-                />
+                <template v-if="files.length > 0">
+                    <Icon
+                        type="search"
+                        width="20"
+                        class="absolute ml-2 text-gray-400"
+                        :style="{ top: '4px' }"
+                    />
 
-                <RoundInput
-                    class="appearance-none g-white dark:bg-gray-800 shadow rounded-full h-8 w-full dark:focus:bg-gray-800"
-                    :placeholder="__('Search')"
-                    spellcheck="false"
-                    :aria-label="__('Search')"
-                    type="text"
-                    @input="performSearch"
-                />
+                    <RoundInput
+                        class="appearance-none g-white dark:bg-gray-800 shadow rounded-full h-8 w-full dark:focus:bg-gray-800"
+                        :placeholder="__('Search')"
+                        spellcheck="false"
+                        :aria-label="__('Search')"
+                        type="text"
+                        @input="performSearch"
+                    />
+                </template>
             </div>
 
             <div
-                v-if="files.length"
                 class="md:col-span-8 md:justify-end flex items-center flex-wrap"
                 :class="{ disabled: loading }"
             >
-                <Dropdown class="hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
+                <Dropdown
+                    v-if="files.length"
+                    class="hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
+                >
                     <DropdownTrigger class="toolbar-button whitespace-nowrap px-2">
                         {{ file }}
                     </DropdownTrigger>
@@ -77,21 +78,21 @@
                     />
 
                     <ToolbarButton
-                        v-if="file && permissions.canDownload"
+                        v-if="files.length && file && permissions.canDownload"
                         @click.prevent="download"
                         type="download"
                         v-tooltip="__('Download')"
                     />
 
                     <ToolbarButton
-                        v-if="file && permissions.canDelete"
+                        v-if="files.length && file && permissions.canDelete"
                         @click.prevent="openDeleteModal"
                         type="trash"
                         v-tooltip="__('Delete')"
                     />
 
                     <ToolbarButton
-                        v-if="file"
+                        v-if="files.length && file"
                         @click.prevent="cacheClear"
                         type="database"
                         v-tooltip="__('Cache Clear')"
@@ -100,7 +101,7 @@
             </div>
         </div>
 
-        <div v-if="levels.length" class="flex mb-4 overflow-y-hidden overflow-x-auto relative">
+        <div v-if="files.length && levels.length" class="flex mb-4 overflow-y-hidden overflow-x-auto relative">
             <template
                 v-for="item in (levels.filter(n => n.count))"
             >
@@ -165,7 +166,7 @@
             <template v-else>
                 <Card>
                     <div class="overflow-y-hidden overflow-x-auto relative">
-                        <table v-if="logs.data.length > 0" class="w-full table-default">
+                        <table v-if="files.length && logs.data.length " class="w-full table-default">
                             <thead>
                                 <tr>
                                     <th class="text-left px-2 whitespace-nowrap uppercase text-gray-500 text-xxs tracking-wide py-2"></th>
@@ -248,7 +249,7 @@
                     </div>
 
                     <div
-                        v-if="!logs.data.length"
+                        v-if="!files.length || !logs.data.length"
                         class="flex flex-col justify-center items-center px-6 py-8"
                     >
                         <Icon
@@ -264,7 +265,7 @@
                     </div>
 
                     <div class="bg-20 rounded-b">
-                        <nav v-if="logs.data.length > 0" class="flex justify-between">
+                        <nav v-if="files.length && logs.data.length > 0" class="flex justify-between">
                             <!-- Previous Link -->
                             <button
                                 :disabled="logs.onFirstPage"
@@ -358,7 +359,6 @@
                     </div>
 
                     <pre
-                        ref="outputCodeStack"
                         v-if="showLog.fullText"
                         v-text="showLog.fullText"
                         class="block p-4 rounded-lg bg-gray-100 dark:bg-gray-900 w-full text-left"
@@ -378,15 +378,16 @@
         </Modal>
 
         <DeleteResourceModal
+            ref="deleteModal"
             mode="delete"
             :show="deleteModalOpen"
-            @close="closeDeleteModal"
+            @close="deleteModalOpen = false"
             @confirm="confirmDelete"
         >
             <ModalHeader v-text="__('Delete Log file')" />
             <ModalContent>
                 <p class="text-80 leading-normal">
-                    {{ __("Are you sure you want to delete this ':fileName' file?", { fileName: this.file }) }}
+                    {{ __("Are you sure you want to delete this ':fileName' file?", { fileName: this.file ?? '-' }) }}
                 </p>
             </ModalContent>
         </DeleteResourceModal>
@@ -603,7 +604,7 @@
             },
 
             closeDeleteModal() {
-                this.deleteModalOpen = false;
+                this.$refs.deleteModal.handleClose();
             },
 
             async cacheClear() {
@@ -615,16 +616,17 @@
             },
 
             async confirmDelete() {
-                this.deleteModalOpen = false;
                 this.loading = true;
 
-                await api.deleteFile(this.file);
+                return await api.deleteFile(this.file)
+                    .finally(async () => {
+                        this.file = null;
+                        this.search = null;
+                        this.selectedLevels = null;
 
-                this.file = null;
-                this.search = null;
-                this.selectedLevels = null;
-
-                await this.getLogs();
+                        return await this.getLogs()
+                            .finally(() => this.closeDeleteModal());
+                    });
             },
 
             setupInterval() {
