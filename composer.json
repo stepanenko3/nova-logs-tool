@@ -19,12 +19,6 @@
         "laravel/nova": "^4.0",
         "stepanenko3/laravel-log-viewer": "*"
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../nova"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Stepanenko3\\LogsTool\\": "src/"
