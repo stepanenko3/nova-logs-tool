@@ -17,8 +17,6 @@ use Stepanenko3\LogsTool\Http\Controllers\LogsController;
 Route::controller(LogsController::class)->group(function () {
     Route::get('logs', 'index');
 
-    Route::get('logs/clearCacheAll', 'clearCacheAll');
-
     Route::get('logs/permissions', 'permissions');
 
     Route::delete('logs/cache', 'cacheClear');
