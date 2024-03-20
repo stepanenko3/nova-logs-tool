@@ -122,7 +122,7 @@
                 <Loader class="text-60" />
             </div>
             <template v-else>
-                <div class="bg-white shadow rounded-lg">
+                <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
                     <div class="overflow-y-hidden overflow-x-auto relative">
                         <table
                             v-if="files.length && logs.data.length"
