@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Stepanenko3\LogsTool\LogsTool;
 use Stepanenko3\LaravelLogViewer\Facades\LogViewer;
 use Stepanenko3\LaravelLogViewer\LogFile;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LogsController extends Controller
 {
@@ -20,6 +21,7 @@ class LogsController extends Controller
         $search = (string) $request->input('search', '');
 
         $selectedLevels = null;
+
         if ($request->has('selectedLevels')) {
             $selectedLevels = [];
 
@@ -83,15 +85,10 @@ class LogsController extends Controller
         ]);
     }
 
-    /**
-     * @param $log
-     * @param  Request  $request
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
-     *
-     * @throws \Exception
-     */
-    public function download($log, Request $request)
-    {
+    public function download(
+        $log,
+        Request $request,
+    ): BinaryFileResponse {
         if (!LogsTool::authorizedToDownload($request)) {
             abort(403);
         }
@@ -99,13 +96,9 @@ class LogsController extends Controller
         return LogFile::download($log);
     }
 
-    /**
-     * @param  Request  $request
-     *
-     * @throws \Exception
-     */
-    public function delete(Request $request)
-    {
+    public function delete(
+        Request $request,
+    ): void {
         if (!LogsTool::authorizedToDelete($request)) {
             abort(403);
         }

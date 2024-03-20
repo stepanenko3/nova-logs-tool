@@ -31,9 +31,19 @@
             ]
         }
     },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://laravelsatis.com"
+        }
+    ],
     "config": {
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "require-dev": {
+        "phpstan/phpstan": "^1.10",
+        "tightenco/duster": "^2.7"
+    }
 }

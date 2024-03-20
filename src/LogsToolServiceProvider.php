@@ -9,25 +9,15 @@ use Laravel\Nova\Nova;
 
 class LogsToolServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
+    public function register(): void
     {
         $this->registerRoutes();
     }
 
-    /**
-     * Register the tool's routes.
-     *
-     * @return void
-     */
-    protected function registerRoutes()
+    protected function registerRoutes(): void
     {
         // Register nova routes
-        Nova::router()->group(function ($router) {
+        Nova::router()->group(function ($router): void {
             $path = 'logs';
             $router->get($path, fn () => inertia('NovaLogs', ['basePath' => $path]));
         });

@@ -14,7 +14,7 @@ use Stepanenko3\LogsTool\Http\Controllers\LogsController;
 |
 */
 
-Route::controller(LogsController::class)->group(function () {
+Route::controller(LogsController::class)->group(function (): void {
     Route::get('logs', 'index');
 
     Route::get('logs/permissions', 'permissions');
