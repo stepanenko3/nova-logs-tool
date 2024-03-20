@@ -31,6 +31,12 @@
             ]
         }
     },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://laravelsatis.com"
+        }
+    ],
     "config": {
         "sort-packages": true
     },
