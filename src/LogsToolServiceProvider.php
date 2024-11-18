@@ -26,7 +26,7 @@ class LogsToolServiceProvider extends ServiceProvider
             return;
         }
 
-        Route::middleware(['nova', Authorize::class])
+        Route::middleware(['nova', 'nova:api', Authorize::class])
             ->prefix('nova-vendor/stepanenko3/logs-tool')
             ->group(__DIR__ . '/../routes/api.php');
     }
