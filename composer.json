@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": ">=8.0.0",
+        "php": ">=8.2.0",
         "laravel/nova": "^5.0",
         "stepanenko3/laravel-log-viewer": "*"
     },
